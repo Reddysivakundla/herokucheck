@@ -27,5 +27,18 @@ public class UserDaoImpl implements UserDao {
 		List<UserDTO> userDTOList = userEntityList.stream().map(x -> UserEntity.convertUsersEntity(x)).collect(Collectors.toList());
 		return userDTOList;
 	}
-
+	
+	@Override
+	public UserDTO getUser(Integer val) {
+		UserEntity usr = entityManager.find(UserEntity.class, val);
+		UserDTO dtoUser = UserEntity.convertUsersEntity(usr);
+		return dtoUser;
+	}
+	
+	@Override
+	public Integer createUser(UserDTO userDTO) {
+		UserEntity user = UserDTO.convertDTO(userDTO);
+		entityManager.persist(user);
+		return user.getUserId();
+	}
 }
