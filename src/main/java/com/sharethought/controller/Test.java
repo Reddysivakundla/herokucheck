@@ -15,12 +15,16 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.sharethought.dto.UserDTO;
 import com.sharethought.service.UserService;
+import com.sharethought.utilites.MailFunction;
 
 @RestController
 public class Test {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private MailFunction mailFunction;
 	
 	@Autowired
 	private Environment env;
@@ -61,6 +65,18 @@ public class Test {
 		}
 		catch(Exception e) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,env.getProperty(e.getMessage()));
+		}
+	}
+	
+	@GetMapping("/sendEmail")
+	public ResponseEntity<String> testSendMail(){
+		try {
+			mailFunction.sendEmail();
+			mailFunction.sendEmail("reddysiva9920@gmail.com", 1);
+			return new ResponseEntity<String>("Sent",HttpStatus.OK);
+		}
+		catch(Exception e) {
+			throw new ResponseStatusException(HttpStatus.CHECKPOINT,env.getProperty(e.getMessage()));
 		}
 	}
 }
