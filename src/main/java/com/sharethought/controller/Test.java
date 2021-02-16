@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,16 +16,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.sharethought.dto.UserDTO;
 import com.sharethought.service.UserService;
-import com.sharethought.utilites.MailFunction;
 
 @RestController
+@CrossOrigin
 public class Test {
 	
 	@Autowired
 	private UserService userService;
-	
-	@Autowired
-	private MailFunction mailFunction;
 	
 	@Autowired
 	private Environment env;
@@ -64,19 +62,22 @@ public class Test {
 			return new ResponseEntity<Integer>(userId, HttpStatus.CREATED);
 		}
 		catch(Exception e) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,env.getProperty(e.getMessage()));
+			throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,env.getProperty(e.getMessage()));
 		}
 	}
 	
-	@GetMapping("/sendEmail")
-	public ResponseEntity<String> testSendMail(){
+	@GetMapping("/validateUser/{userKey}")
+	public ResponseEntity<String> validateUserId(@PathVariable String userKey){
 		try {
-			mailFunction.sendEmail();
-			mailFunction.sendEmail("reddysiva9920@gmail.com", 1);
-			return new ResponseEntity<String>("Sent",HttpStatus.OK);
+			Integer val = Integer.parseInt(userKey);
+			String verifyStatus = userService.verifyEmail(val);
+			String response = "User Verified Succsessfully : " + verifyStatus;
+			return new ResponseEntity<String>(response, HttpStatus.ACCEPTED);
 		}
 		catch(Exception e) {
-			throw new ResponseStatusException(HttpStatus.CHECKPOINT,env.getProperty(e.getMessage()));
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,env.getProperty(e.getMessage()));
 		}
 	}
+	
+	
 }

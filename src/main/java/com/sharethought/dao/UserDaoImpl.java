@@ -21,7 +21,6 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public List<UserDTO> getUsers() {
-		// TODO Auto-generated method stub
 		Query query = entityManager.createQuery("SELECT z FROM UserEntity z");
 		List<UserEntity> userEntityList = query.getResultList();
 		List<UserDTO> userDTOList = userEntityList.stream().map(x -> UserEntity.convertUsersEntity(x)).collect(Collectors.toList());
@@ -40,5 +39,25 @@ public class UserDaoImpl implements UserDao {
 		UserEntity user = UserDTO.convertDTO(userDTO);
 		entityManager.persist(user);
 		return user.getUserId();
+	}
+	
+	@Override
+	public String verifyEmail(Integer userId) {
+		
+		UserEntity userEntity = null;
+		userEntity = entityManager.find(UserEntity.class, userId);
+		
+		if(userEntity == null) {
+			return null;
+		}
+		
+		if(userEntity.getVerifyStatus().equals("verified")) {
+			return "Already Verified";
+		}
+		else {
+			userEntity.setVerifyStatus("verified");
+			entityManager.persist(userEntity);
+		}
+		return userEntity.getVerifyStatus();
 	}
 }
