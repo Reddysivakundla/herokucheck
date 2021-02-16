@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.sharethought.dao.UserDao;
 import com.sharethought.dto.UserDTO;
+import com.sharethought.utilites.MailFunction;
 
 @Service
 @Transactional
@@ -19,7 +20,10 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private UserDao userDao;
-
+	
+	@Autowired
+	private MailFunction mailFunction;
+	
 	@Override
 	public List<UserDTO> getAllUsers() {
 		List<UserDTO> reqList = null;
@@ -57,15 +61,20 @@ public class UserServiceImpl implements UserService {
 			}
 			
 			Integer reqUserId = userDao.createUser(user);
-			//mailFunction.sendEmail(user.getUseremail(),reqUserId);
+			mailFunction.sendEmail(user.getUseremail(),reqUserId);
 			return reqUserId;
 			
 		} catch (NoSuchAlgorithmException e) {
 			 throw new Exception(e);
 		}
-		catch (Exception e) {
-			 throw new Exception(e);
+	}
+	
+	@Override
+	public String verifyEmail(Integer val) throws Exception {
+		String verifyStatus = userDao.verifyEmail(val);
+		if(verifyStatus == null) {
+			throw new Exception("Application.NO_USER_FOUND");
 		}
-		
+		return verifyStatus;
 	}
 }

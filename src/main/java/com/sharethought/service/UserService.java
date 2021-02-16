@@ -9,5 +9,6 @@ public interface UserService {
 	public List<UserDTO> getAllUsers();
 	public UserDTO getUser(Integer val) throws Exception;
 	public Integer createUser(UserDTO user) throws Exception;
+	public String verifyEmail(Integer val) throws Exception;
 	
 }
